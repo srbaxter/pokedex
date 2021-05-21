@@ -1,7 +1,7 @@
 <template>
   <div id="search">
-    <label>Select a generation to search for Pokémon</label>
-    <select v-model="generation" name="generation" @change="genChange">
+    <h2>Select a generation to search for Pokémon</h2>
+    <select v-model="generation" name="generation">
       <option value="" :selected="generation">Select One</option>
       <option v-for="gen in generations" :key="gen.name" :value="gen.name">
         {{ gen.readableName }}
@@ -17,14 +17,29 @@ export default {
   emits: ["loaded"],
   setup(props, { emit }) {
     const generation = ref("");
-    const allGenerations = reactive([]);
+    let allGenerations = reactive([]);
+
     async function fetchGenerations() {
       return await fetch("https://pokeapi.co/api/v2/generation")
         .then((res) => res.json())
-        .then((data) => allGenerations.push(...data.results))
+        .then((data) => {
+          allGenerations.push(...data.results);
+          localStorage.setItem(
+            "generation-list",
+            JSON.stringify(allGenerations)
+          );
+        })
         .catch((err) => console.log(err));
     }
-    onMounted(fetchGenerations);
+
+    if (localStorage.getItem("generation-list")) {
+      console.log("bringing in");
+      allGenerations = JSON.parse(localStorage.getItem("generation-list"));
+    } else {
+      console.log("setting");
+      onMounted(fetchGenerations);
+    }
+
     const generations = computed(() => {
       const gens = [...allGenerations];
       return gens.map((gen, index) => {
@@ -36,7 +51,6 @@ export default {
     watch(generation, (newGen) => {
       emit("loaded", newGen);
     });
-    // const genChange = (event) => emit("loaded", event.target.value);
 
     return { generation, generations };
   },
@@ -57,8 +71,5 @@ select {
   margin: 15px auto 50px auto;
   border: 1px solid #aaa;
   border-radius: 0.5em;
-}
-label {
-  font-weight: bolder;
 }
 </style>

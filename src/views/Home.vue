@@ -2,7 +2,7 @@
   <div class="home">
     <div class="header">
       <img
-        alt="Pokeball"
+        alt="Pokéball"
         src="../assets/pokeball.png"
         id="Pokeball"
         width="100"
@@ -12,7 +12,12 @@
     </div>
     <Search @loaded="getSelectedGeneration" />
   </div>
-  <SearchList v-if="generation !== ''" :selectedGeneration="generation" />
+  <SearchList
+    v-if="generation !== ''"
+    :selectedGeneration="generation"
+    :spriteURL="spriteURL"
+    @selected="showDetail"
+  />
 </template>
 
 <script>
@@ -28,12 +33,19 @@ export default {
   },
   setup() {
     let generation = ref("");
+    const spriteURL = ref(
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
+    );
 
     function getSelectedGeneration(gen) {
       generation.value = gen;
     }
 
-    return { generation, getSelectedGeneration };
+    function showDetail(picked) {
+      console.log(picked);
+    }
+
+    return { generation, getSelectedGeneration, spriteURL, showDetail };
   },
 };
 </script>
@@ -41,11 +53,11 @@ export default {
 <style scoped>
 .home {
   border: 1px solid black;
-  border-radius: 10%;
+  border-radius: 50px;
   background: #ffe;
   width: 60%;
   margin: 0 auto;
-  box-shadow: 25px 25px lightgreen;
+  box-shadow: 25px 25px darkred;
 }
 .header {
   display: flex;
