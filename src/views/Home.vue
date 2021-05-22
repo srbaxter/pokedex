@@ -47,11 +47,11 @@ export default {
   },
   setup(props) {
     const router = useRouter();
-    const { gen } = toRefs(props);
     const pokeURL = ref("https://pokeapi.co/api/v2/");
     const spriteURL = ref(
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
     );
+    const { gen } = toRefs(props);
     let generation = ref("");
 
     // if we have the gen prop, set the generation search input to this value

@@ -1,5 +1,10 @@
 # pokedex
 
+## Overview
+This project uses the [PokéAPI](https://pokeapi.co/) to search and display results from a Pokédex.<br/>
+It was created with the Vue CLI to use Vue 3, Vue Router, Babel, ESLint, Prettier, and Jest.<br/>
+All Vue 3 code uses the Composition API instead of the Options API (i.e. uses setup()).
+
 ## Project setup
 ```
 npm install
