@@ -80,7 +80,6 @@ export default {
   width: 75%;
   margin: 0 auto;
   box-shadow: 25px 25px darkred;
-  position: relative;
 }
 .cap {
   text-transform: capitalize;
@@ -92,6 +91,7 @@ export default {
   margin: 5px;
   color: white;
   font-weight: bolder;
+  font-size: 1.2em;
   cursor: pointer;
 }
 .heading img {
@@ -100,6 +100,7 @@ export default {
   border-radius: 10px;
   margin-top: 20px;
   padding: 10px;
+  max-width: 100%;
 }
 .typesSection {
   display: grid;
@@ -116,6 +117,7 @@ export default {
   color: white;
   font-weight: bolder;
   padding: 10px 0;
+  max-width: 300px;
 }
 .statsSection {
   display: flex;

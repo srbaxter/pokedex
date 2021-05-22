@@ -1,6 +1,6 @@
 <template>
   <div id="search">
-    <h2>Select a generation to search for Pokémon</h2>
+    <label for="generation">Select a generation to search for Pokémon</label>
     <select v-model="generation" name="generation">
       <option value="" :selected="generation">Select One</option>
       <option v-for="gen in generations" :key="gen.name" :value="gen.name">
@@ -33,10 +33,8 @@ export default {
     }
 
     if (localStorage.getItem("generation-list")) {
-      console.log("bringing in");
       allGenerations = JSON.parse(localStorage.getItem("generation-list"));
     } else {
-      console.log("setting");
       onMounted(fetchGenerations);
     }
 
@@ -62,6 +60,10 @@ export default {
   display: flex;
   align-items: center;
   flex-direction: column;
+}
+label {
+  font-size: 1.5em;
+  font-weight: bolder;
 }
 select {
   font-size: 1em;

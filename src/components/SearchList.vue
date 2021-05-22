@@ -3,9 +3,14 @@
     <h2>
       <span class="cap">{{ genName }}</span> Pokémon List
     </h2>
+    <div class="filterSection">
+      <label for="pokeSearch">Filter Results:</label>
+      <input v-model="pokeSearch" type="text" name="pokeSearch" />
+    </div>
+
     <div class="pokeList" v-if="!loading">
       <div
-        v-for="pokemon in allPokemon"
+        v-for="pokemon in filteredPokemon"
         :key="pokemon.name"
         @click="emitPokemon(pokemon)"
         class="pokeGrid"
@@ -43,8 +48,11 @@ export default {
     const allPokemon = ref([]);
     const genName = ref("");
     const loading = ref(true);
+    const pokeSearch = ref("");
+    const filteredPokemon = ref([]);
 
     async function fetchGenList() {
+      pokeSearch.value = "";
       return await fetch(
         `https://pokeapi.co/api/v2/generation/${selectedGeneration.value}`
       )
@@ -63,6 +71,7 @@ export default {
           });
 
           allPokemon.value = tempPoke.sort((a, b) => a.pokeID - b.pokeID);
+          filteredPokemon.value = allPokemon.value;
 
           loading.value = false;
         })
@@ -72,11 +81,21 @@ export default {
     onMounted(fetchGenList);
     watch(selectedGeneration, fetchGenList);
 
+    watch(pokeSearch, (newFilter) => {
+      if (newFilter !== "") {
+        filteredPokemon.value = allPokemon.value.filter((pick) =>
+          pick.name.toLowerCase().includes(newFilter.toLowerCase())
+        );
+      } else {
+        filteredPokemon.value = allPokemon.value;
+      }
+    });
+
     function emitPokemon(pokemon) {
       emit("selected", pokemon);
     }
 
-    return { allPokemon, genName, loading, emitPokemon };
+    return { filteredPokemon, genName, loading, emitPokemon, pokeSearch };
   },
 };
 </script>
@@ -98,11 +117,14 @@ h2 {
 }
 .pokeList {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   grid-gap: 10px;
   width: 95%;
   max-width: 95%;
   margin: 20px auto;
+}
+.pokeList img {
+  max-width: 100%;
 }
 .pokeGrid {
   display: flex;
@@ -115,5 +137,14 @@ h2 {
   padding: 10px;
   text-transform: capitalize;
   cursor: pointer;
+  max-width: 150px;
+}
+.filterSection label {
+  margin: 0 10px;
+  font-size: 1em;
+}
+.filterSection input {
+  padding: 5px;
+  font-size: 1em;
 }
 </style>

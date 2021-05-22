@@ -70,5 +70,6 @@ export default {
 }
 .header img {
   margin: 10px;
+  max-width: 100%;
 }
 </style>
