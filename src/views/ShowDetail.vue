@@ -1,5 +1,5 @@
 <template>
-  <button @click="$router.back()" class="backButton">&lt; Back to List</button>
+  <button @click="goBack" class="backButton">&lt; Back to List</button>
 
   <div id="detail">
     <div v-if="!loading">
@@ -42,6 +42,8 @@
 
 <script>
 import { toRefs, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
+
 export default {
   name: "ShowDetail",
   props: {
@@ -49,25 +51,45 @@ export default {
       type: String,
       required: true,
     },
+    generation: {
+      type: String,
+      required: true,
+    },
+    pokeURL: {
+      type: String,
+      required: true,
+    },
   },
   setup(props) {
-    const { id } = toRefs(props);
+    const { id, generation, pokeURL } = toRefs(props);
+    const router = useRouter();
     const loading = ref(true);
     const thisPokemon = ref({});
 
+    // async function that gets the details for the selected Pokemon
     async function fetchPokemon() {
-      return await fetch(`https://pokeapi.co/api/v2/pokemon/${id.value}`)
+      return await fetch(`${pokeURL.value}pokemon/${id.value}`)
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           thisPokemon.value = data;
           loading.value = false;
         })
         .catch((err) => console.log(err));
     }
 
+    // run async function when component is mounted
     onMounted(fetchPokemon);
-    return { thisPokemon, loading };
+
+    // use the Router to go back to the SearchList when the Back button is clicked
+    // send along which generation we were on so we can reload that list
+    function goBack() {
+      router.push({
+        name: "Generation",
+        params: { gen: generation.value },
+      });
+    }
+
+    return { thisPokemon, loading, goBack };
   },
 };
 </script>

@@ -37,6 +37,10 @@ export default {
       type: String,
       required: true,
     },
+    pokeURL: {
+      type: String,
+      required: true,
+    },
     spriteURL: {
       type: String,
       required: true,
@@ -44,17 +48,19 @@ export default {
   },
   emits: ["selected"],
   setup(props, { emit }) {
-    const { selectedGeneration, spriteURL } = toRefs(props);
+    const { selectedGeneration, pokeURL, spriteURL } = toRefs(props);
     const allPokemon = ref([]);
     const genName = ref("");
     const loading = ref(true);
     const pokeSearch = ref("");
     const filteredPokemon = ref([]);
 
+    // async function that gets the list of Pokemon for the selected generation
+    // creates variables for the region name, Pokedex ID, Pokemon sprite, and sorted list of Pokemon by Pokedex ID
     async function fetchGenList() {
       pokeSearch.value = "";
       return await fetch(
-        `https://pokeapi.co/api/v2/generation/${selectedGeneration.value}`
+        `${pokeURL.value}generation/${selectedGeneration.value}`
       )
         .then((res) => res.json())
         .then((data) => {
@@ -78,9 +84,14 @@ export default {
         .catch((err) => console.log(err));
     }
 
+    // run async function when component is mounted
     onMounted(fetchGenList);
+    // run async function when selected generation is changed
     watch(selectedGeneration, fetchGenList);
 
+    // watch the filter results search box for user input
+    // if empty, use the async results we fetched
+    // if input, filter down to Pokemon names that include the input
     watch(pokeSearch, (newFilter) => {
       if (newFilter !== "") {
         filteredPokemon.value = allPokemon.value.filter((pick) =>
@@ -91,6 +102,7 @@ export default {
       }
     });
 
+    // emit function for selected generation
     function emitPokemon(pokemon) {
       emit("selected", pokemon);
     }
