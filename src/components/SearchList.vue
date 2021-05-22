@@ -86,7 +86,7 @@ export default {
   border: 1px solid black;
   border-radius: 50px;
   background: #ffe;
-  width: 80%;
+  width: 90%;
   margin: 50px auto;
   box-shadow: 25px 25px darkred;
 }
@@ -102,10 +102,14 @@ h2 {
   grid-gap: 10px;
   width: 95%;
   max-width: 95%;
-  margin: 10px auto;
+  margin: 20px auto;
 }
 .pokeGrid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-weight: bolder;
+  border-radius: 10px;
   border: 1px solid black;
   background-color: white;
   padding: 10px;

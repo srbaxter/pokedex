@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div id="home">
     <div class="header">
       <img
         alt="Pokéball"
@@ -22,6 +22,7 @@
 
 <script>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import Search from "@/components/Search.vue";
 import SearchList from "@/components/SearchList.vue";
 
@@ -32,6 +33,7 @@ export default {
     SearchList,
   },
   setup() {
+    const router = useRouter();
     let generation = ref("");
     const spriteURL = ref(
       "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
@@ -43,6 +45,7 @@ export default {
 
     function showDetail(picked) {
       console.log(picked);
+      router.push({ name: "ShowDetail", params: { id: picked.pokeID } });
     }
 
     return { generation, getSelectedGeneration, spriteURL, showDetail };
@@ -51,11 +54,11 @@ export default {
 </script>
 
 <style scoped>
-.home {
+#home {
   border: 1px solid black;
   border-radius: 50px;
   background: #ffe;
-  width: 60%;
+  width: 75%;
   margin: 0 auto;
   box-shadow: 25px 25px darkred;
 }

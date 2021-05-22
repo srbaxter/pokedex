@@ -64,12 +64,17 @@ export default {
   flex-direction: column;
 }
 select {
-  font-size: 16px;
+  font-size: 1em;
   padding: 0.5em;
-  width: 20%;
-  max-width: 20%;
+  width: 60%;
+  max-width: 60%;
   margin: 15px auto 50px auto;
   border: 1px solid #aaa;
   border-radius: 0.5em;
+}
+@media (min-width: 800px) {
+  select {
+    width: 30%;
+  }
 }
 </style>
