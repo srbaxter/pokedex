@@ -40,7 +40,7 @@ describe("Search.vue", () => {
     expect(wrapper.findAll("select > option").length).toBe(3);
   });
 
-  it("use prop to select generation in list", async () => {
+  it("use prop to select generation in list", () => {
     localStorage.setItem(
       "generation-list",
       JSON.stringify(fakeGenerations.results)
@@ -56,5 +56,8 @@ describe("Search.vue", () => {
     expect(wrapper.vm.generation).toBe("1");
     expect(wrapper.vm.generations.length).toBe(2);
     expect(wrapper.findAll("select > option").length).toBe(3);
+
+    wrapper.get("select > option").setValue("");
+    expect(wrapper.vm.generation).toBe("");
   });
 });
