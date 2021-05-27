@@ -26,13 +26,13 @@ describe("Home.vue", () => {
     router.push("/");
     await router.isReady();
 
-    const wrapper = shallowMount(Home, {
+    const c = shallowMount(Home, {
       global: {
         plugins: [router],
       },
     });
 
-    expect(wrapper.text()).toContain("Pokédex");
-    expect(wrapper.html()).toContain("img");
+    expect(c.text()).toContain("Pokédex");
+    expect(c.html()).toContain("img");
   });
 });

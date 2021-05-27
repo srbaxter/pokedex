@@ -18,7 +18,7 @@ global.fetch = jest.fn(() =>
 
 describe("Search.vue", () => {
   it("retrieves generation list", async () => {
-    const wrapper = shallowMount(Search, {
+    const c = shallowMount(Search, {
       props: {
         pokeURL: pURL,
       },
@@ -29,7 +29,7 @@ describe("Search.vue", () => {
 
     await flushPromises();
 
-    const gens = wrapper.vm.generations;
+    const gens = c.vm.generations;
     expect(gens.length).toBe(2);
     expect(gens[0]).toHaveProperty("readableName");
     expect(gens[0].name).toBe("generation-i");
@@ -37,27 +37,52 @@ describe("Search.vue", () => {
     expect(gens[1]).toHaveProperty("readableName");
     expect(gens[1].name).toBe("generation-ii");
     expect(gens[1].readableName).toBe("Generation 2");
-    expect(wrapper.findAll("select > option").length).toBe(3);
+    expect(c.findAll("select > option").length).toBe(3);
   });
 
-  it("use prop to select generation in list", () => {
+  it("use prop with localStorage to select generation in list", async () => {
     localStorage.setItem(
       "generation-list",
       JSON.stringify(fakeGenerations.results)
     );
 
-    const wrapper = shallowMount(Search, {
+    const c = shallowMount(Search, {
       props: {
         pokeURL: pURL,
-        loadedGeneration: "1",
+        loadedGeneration: "generation-i",
       },
     });
 
-    expect(wrapper.vm.generation).toBe("1");
-    expect(wrapper.vm.generations.length).toBe(2);
-    expect(wrapper.findAll("select > option").length).toBe(3);
+    expect(c.vm.generation).toBe("generation-i");
+    expect(c.vm.generations.length).toBe(2);
+    expect(c.findAll("select > option").length).toBe(3);
 
-    wrapper.get("select > option").setValue("");
-    expect(wrapper.vm.generation).toBe("");
+    localStorage.removeItem("generation-list");
+  });
+
+  it("check for emit loaded by picking a generation", async () => {
+    localStorage.setItem(
+      "generation-list",
+      JSON.stringify(fakeGenerations.results)
+    );
+
+    const c = shallowMount(Search, {
+      props: {
+        pokeURL: pURL,
+      },
+    });
+
+    expect(c.vm.generations.length).toBe(2);
+    expect(c.findAll("select > option").length).toBe(3);
+
+    await c.find("select").setValue("");
+    expect(c.vm.generation).toBe("");
+    expect(c.emitted()).not.toHaveProperty("loaded");
+
+    await c.find("select").setValue("generation-i");
+    expect(c.vm.generation).toBe("generation-i");
+    expect(c.emitted()).toHaveProperty("loaded");
+
+    localStorage.removeItem("generation-list");
   });
 });
