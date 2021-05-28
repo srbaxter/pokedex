@@ -5,8 +5,8 @@ const pURL = "https://pokeapi.co/api/v2/";
 
 const fakeGenerations = {
   results: [
-    { name: "generation-i", url: "https://pokeapi.co/api/v2/generation/1/" },
-    { name: "generation-ii", url: "https://pokeapi.co/api/v2/generation/2/" },
+    { name: "generation-i", url: `${pURL}generation/1/` },
+    { name: "generation-ii", url: `${pURL}generation/2/` },
   ],
 };
 
@@ -25,7 +25,7 @@ describe("Search.vue", () => {
     });
 
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect(fetch).toHaveBeenCalledWith("https://pokeapi.co/api/v2/generation");
+    expect(fetch).toHaveBeenCalledWith(`${pURL}generation`);
 
     await flushPromises();
 
