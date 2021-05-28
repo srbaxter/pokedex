@@ -10,4 +10,7 @@
   text-align: center;
   color: #2c3e50;
 }
+html {
+  background-color: rgb(2, 20, 75);
+}
 </style>
