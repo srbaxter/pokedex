@@ -76,10 +76,12 @@ describe("Search.vue", () => {
     expect(c.findAll("select > option").length).toBe(3);
 
     await c.find("select").setValue("");
+    expect(c.find("select").element.value).toBe("");
     expect(c.vm.generation).toBe("");
     expect(c.emitted()).not.toHaveProperty("loaded");
 
     await c.find("select").setValue("generation-i");
+    expect(c.find("select").element.value).toBe("generation-i");
     expect(c.vm.generation).toBe("generation-i");
     expect(c.emitted()).toHaveProperty("loaded");
 

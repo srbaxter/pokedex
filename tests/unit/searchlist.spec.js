@@ -33,12 +33,15 @@ describe("SearchList.vue", () => {
       },
     });
 
+    expect(c.vm.loading).toBe(true);
     expect(fetch).toHaveBeenCalledTimes(1);
     expect(fetch).toHaveBeenCalledWith(
       "https://pokeapi.co/api/v2/generation/generation-i"
     );
 
     await flushPromises();
+
+    expect(c.vm.loading).toBe(false);
 
     expect(c.vm.genName).toBe("Kanto");
 
@@ -71,5 +74,47 @@ describe("SearchList.vue", () => {
     expect(poke[2].url).toBe("https://pokeapi.co/api/v2/pokemon-species/7/");
     expect(poke[2].pokeID).toBe("7");
     expect(poke[2].sprite).toBe(`${sURL}${poke[2].pokeID}.png`);
+  });
+
+  it("check for emit selected by picking a pokemon", async () => {
+    const c = shallowMount(SearchList, {
+      props: {
+        pokeURL: pURL,
+        spriteURL: sURL,
+        selectedGeneration: "generation-i",
+      },
+    });
+
+    expect(c.vm.loading).toBe(true);
+    await flushPromises();
+    expect(c.vm.loading).toBe(false);
+
+    expect(c.emitted()).not.toHaveProperty("selected");
+    const p = c.findAll(".pokeGrid");
+    await p[0].trigger("click");
+    expect(c.emitted()).toHaveProperty("selected");
+  });
+
+  it("filter for squirtle", async () => {
+    const c = shallowMount(SearchList, {
+      props: {
+        pokeURL: pURL,
+        spriteURL: sURL,
+        selectedGeneration: "generation-i",
+      },
+    });
+
+    expect(c.vm.loading).toBe(true);
+    await flushPromises();
+    expect(c.vm.loading).toBe(false);
+
+    const i = c.find("input");
+    await i.setValue("sq");
+    expect(i.element.value).toBe("sq");
+    expect(c.vm.filteredPokemon.length).toBe(1);
+
+    await i.setValue("");
+    expect(i.element.value).toBe("");
+    expect(c.vm.filteredPokemon.length).toBe(3);
   });
 });
