@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { watch, onMounted, toRefs, ref } from "vue";
+import { watch, onMounted, toRefs, ref, reactive, computed } from "vue";
 export default {
   name: "SearchList",
   props: {
@@ -49,14 +49,29 @@ export default {
   emits: ["selected"],
   setup(props, { emit }) {
     const { selectedGeneration, pokeURL, spriteURL } = toRefs(props);
-    const allPokemon = ref([]);
     const genName = ref("");
     const loading = ref(true);
     const pokeSearch = ref("");
-    const filteredPokemon = ref([]);
+
+    const state = reactive({
+      allPokemon: [],
+
+      // watch the filter results search box for user input
+      // if empty, use the async results we fetched
+      // if input, filter down to Pokemon names that include the input
+      filteredPokemon: computed(() => {
+        if (pokeSearch.value !== "") {
+          return state.allPokemon.filter((pick) =>
+            pick.name.toLowerCase().includes(pokeSearch.value.toLowerCase())
+          );
+        } else {
+          return state.allPokemon;
+        }
+      }),
+    });
 
     // async function that gets the list of Pokemon for the selected generation
-    // creates variables for the region name, Pokedex ID, Pokemon sprite, and sorted list of Pokemon by Pokedex ID
+    // creates variables for the region name, Pokedex ID, sprite, and sorted list of Pokemon
     async function fetchGenList() {
       pokeSearch.value = "";
       return await fetch(
@@ -65,7 +80,6 @@ export default {
         .then((res) => res.json())
         .then((data) => {
           genName.value = data.main_region.name;
-
           const tempPoke = [...data.pokemon_species].map((p) => {
             let pokeID = p.url
               .split("/")
@@ -76,9 +90,7 @@ export default {
             return p;
           });
 
-          allPokemon.value = tempPoke.sort((a, b) => a.pokeID - b.pokeID);
-          filteredPokemon.value = allPokemon.value;
-
+          state.allPokemon = tempPoke.sort((a, b) => a.pokeID - b.pokeID);
           loading.value = false;
         })
         .catch((err) => console.log(err));
@@ -89,25 +101,12 @@ export default {
     // run async function when selected generation is changed
     watch(selectedGeneration, fetchGenList);
 
-    // watch the filter results search box for user input
-    // if empty, use the async results we fetched
-    // if input, filter down to Pokemon names that include the input
-    watch(pokeSearch, (newFilter) => {
-      if (newFilter !== "") {
-        filteredPokemon.value = allPokemon.value.filter((pick) =>
-          pick.name.toLowerCase().includes(newFilter.toLowerCase())
-        );
-      } else {
-        filteredPokemon.value = allPokemon.value;
-      }
-    });
-
     // emit function for selected generation
     function emitPokemon(pokemon) {
       emit("selected", pokemon);
     }
 
-    return { filteredPokemon, genName, loading, emitPokemon, pokeSearch };
+    return { genName, loading, emitPokemon, pokeSearch, ...toRefs(state) };
   },
 };
 </script>

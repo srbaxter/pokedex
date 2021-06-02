@@ -1,6 +1,5 @@
 <template>
   <button @click="goBack" class="backButton">&lt; Back to List</button>
-
   <div id="detail">
     <div v-if="!loading">
       <div v-if="thisPokemon">
@@ -11,7 +10,9 @@
             width="200"
           />
           <h1>
-            <span class="cap">{{ thisPokemon.name }}</span> (#{{ id }})
+            <span class="cap">{{ thisPokemon.name }}</span> (#{{
+              $route.params.id
+            }})
           </h1>
         </div>
         <div class="typesSection">
@@ -41,8 +42,8 @@
 </template>
 
 <script>
-import { toRefs, onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
+import { toRefs, onMounted, ref, reactive } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
 export default {
   name: "ShowDetail",
@@ -61,17 +62,20 @@ export default {
     },
   },
   setup(props) {
-    const { id, generation, pokeURL } = toRefs(props);
+    const { generation, pokeURL } = toRefs(props);
     const router = useRouter();
+    const route = useRoute();
     const loading = ref(true);
-    const thisPokemon = ref({});
+    const state = reactive({
+      thisPokemon: {},
+    });
 
     // async function that gets the details for the selected Pokemon
     async function fetchPokemon() {
-      return await fetch(`${pokeURL.value}pokemon/${id.value}`)
+      return await fetch(`${pokeURL.value}pokemon/${route.params.id}`)
         .then((res) => res.json())
         .then((data) => {
-          thisPokemon.value = data;
+          state.thisPokemon = data;
           loading.value = false;
         })
         .catch((err) => console.log(err));
@@ -89,7 +93,7 @@ export default {
       });
     }
 
-    return { thisPokemon, loading, goBack };
+    return { loading, goBack, ...toRefs(state) };
   },
 };
 </script>

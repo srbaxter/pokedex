@@ -33,7 +33,18 @@ export default {
   setup(props, { emit }) {
     const { loadedGeneration, pokeURL } = toRefs(props);
     const generation = ref("");
-    let allGenerations = reactive([]);
+    const state = reactive({
+      allGenerations: [],
+
+      // computed function to convert and display generation names to better readable ones
+      generations: computed(() => {
+        const gens = [...state.allGenerations];
+        return gens.map((gen, index) => {
+          gen.readableName = `Generation ${index + 1}`;
+          return gen;
+        });
+      }),
+    });
 
     // if we have the loadedGeneration prop, set the generation search input to this value
     // this means we came from ShowDetail after picking a Pokemon
@@ -47,10 +58,10 @@ export default {
       return await fetch(`${pokeURL.value}generation`)
         .then((res) => res.json())
         .then((data) => {
-          allGenerations.push(...data.results);
+          state.allGenerations = data.results;
           localStorage.setItem(
             "generation-list",
-            JSON.stringify(allGenerations)
+            JSON.stringify(state.allGenerations)
           );
         })
         .catch((err) => console.log(err));
@@ -59,26 +70,19 @@ export default {
     // check localStorage to see if we already have the list of generations
     // if so, set it. otherwise, call the async function once this component is mounted
     if (localStorage.getItem("generation-list")) {
-      allGenerations = JSON.parse(localStorage.getItem("generation-list"));
+      state.allGenerations = JSON.parse(
+        localStorage.getItem("generation-list")
+      );
     } else {
       onMounted(fetchGenerations);
     }
-
-    // computed function to convert and display generation names to better readable ones
-    const generations = computed(() => {
-      const gens = [...allGenerations];
-      return gens.map((gen, index) => {
-        gen.readableName = `Generation ${index + 1}`;
-        return gen;
-      });
-    });
 
     // if a new generation is selected, grab the change and emit "loaded" with the new generation
     watch(generation, (newGen) => {
       emit("loaded", newGen);
     });
 
-    return { generation, generations };
+    return { generation, ...toRefs(state) };
   },
 };
 </script>
